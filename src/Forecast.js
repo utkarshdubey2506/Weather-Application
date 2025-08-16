@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import apiKeys from "./apiKeys";
 import ReactAnimatedWeather from "react-animated-weather";
 
-function Forcast({ icon, weather, city, onCitySelect, currentWeather }) {
+function Forecast({ icon, weather, city, onCitySelect, currentWeather }) {
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [recentSearches, setRecentSearches] = useState([]);
@@ -147,4 +147,4 @@ function Forcast({ icon, weather, city, onCitySelect, currentWeather }) {
   );
 }
 
-export default Forcast;
+export default Forecast;
