@@ -58,6 +58,12 @@ function Forecast({ icon, weather, city, onCitySelect, currentWeather }) {
     searchCities(value);
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && query.trim()) {
+      search(query.trim());
+    }
+  };
+
   const selectCity = (cityName) => {
     setQuery(cityName);
     setSearchResults([]);
@@ -88,12 +94,13 @@ function Forecast({ icon, weather, city, onCitySelect, currentWeather }) {
             className="search-bar"
             placeholder="Search any city"
             onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
             value={query}
           />
           <div className="img-box">
             <img
               src="https://images.avishkaar.cc/workflow/newhp/search-white.png"
-              onClick={() => search()}
+              onClick={() => query.trim() && search(query.trim())}
               alt="search"
             />
           </div>

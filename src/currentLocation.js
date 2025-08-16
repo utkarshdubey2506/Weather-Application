@@ -1,9 +1,40 @@
 import React, { useState, useEffect, useCallback } from "react";
 import apiKeys from "./apiKeys";
-import Clock from "react-live-clock";
+
 import Forecast from "./Forecast";
 import loader from "./images/WeatherIcons.gif";
+import cityDay from "./images/city.jpg";
+import cityNight from "./images/city1.jpg";
 import ReactAnimatedWeather from "react-animated-weather";
+
+const LocalTime = ({ timezone }) => {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const localTime = new Date(utc + (timezone * 1000));
+      setTime(localTime);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timezone]);
+
+  const formatTime = (date) => {
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    hours = hours.toString().padStart(2, '0');
+    
+    return `${hours}:${minutes} ${ampm}`;
+  };
+
+  return <span>{formatTime(time)}</span>;
+};
 
 const dateBuilder = (d) => {
   const months = [
@@ -43,6 +74,15 @@ const getWeatherIcon = (weatherMain) => {
   return iconMap[weatherMain] || "CLEAR_DAY";
 };
 
+const getBackgroundImage = (timezone) => {
+  const now = new Date();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const localTime = new Date(utc + (timezone * 1000));
+  const hour = localTime.getHours();
+  
+  return (hour >= 6 && hour < 18) ? cityDay : cityNight;
+};
+
 function CurrentLocation() {
   const [weather, setWeather] = useState({
     lat: null,
@@ -54,7 +94,9 @@ function CurrentLocation() {
     main: null,
     icon: "CLEAR_DAY",
     windSpeed: null,
-    visibility: null
+    visibility: null,
+    timezone: 0,
+    backgroundImage: cityDay
   });
 
   const getPosition = () => {
@@ -80,7 +122,9 @@ function CurrentLocation() {
         country: data.sys.country,
         visibility: data.visibility,
         windSpeed: data.wind?.speed || null,
-        icon: getWeatherIcon(data.weather[0].main)
+        icon: getWeatherIcon(data.weather[0].main),
+        timezone: data.timezone,
+        backgroundImage: getBackgroundImage(data.timezone)
       });
     } catch (error) {
       console.error("Error fetching weather:", error);
@@ -104,7 +148,9 @@ function CurrentLocation() {
         country: data.sys.country,
         visibility: data.visibility,
         windSpeed: data.wind?.speed || null,
-        icon: getWeatherIcon(data.weather[0].main)
+        icon: getWeatherIcon(data.weather[0].main),
+        timezone: data.timezone,
+        backgroundImage: getBackgroundImage(data.timezone)
       });
     } catch (error) {
       console.error("Error fetching city weather:", error);
@@ -140,15 +186,7 @@ function CurrentLocation() {
     } else {
       alert("Geolocation not available");
     }
-
-    const timerID = setInterval(() => {
-      if (weather.lat && weather.lon) {
-        getWeather(weather.lat, weather.lon);
-      }
-    }, 600000);
-
-    return () => clearInterval(timerID);
-  }, [getWeather, weather.lat, weather.lon]);
+  }, [getWeather]);
 
   if (weather.temperatureC) {
     return (
@@ -156,7 +194,7 @@ function CurrentLocation() {
         <button onClick={getCurrentLocation} className="location-btn">
           📍
         </button>
-        <div className="city">
+        <div className="city" style={{backgroundImage: `url(${weather.backgroundImage})`}}>
           <div className="title">
             <h2>{weather.city}</h2>
             <h3>{weather.country}</h3>
@@ -173,7 +211,7 @@ function CurrentLocation() {
           <div className="date-time">
             <div className="dmy">
               <div className="current-time">
-                <Clock format="HH:mm:ss" interval={1000} ticking={true} />
+                <LocalTime timezone={weather.timezone} />
               </div>
               <div className="current-date">{dateBuilder(new Date())}</div>
             </div>

@@ -2,6 +2,41 @@ import React, { useState, useEffect, useCallback } from "react";
 import apiKeys from "./apiKeys";
 import ReactAnimatedWeather from "react-animated-weather";
 
+const BookmarkTime = ({ timezone }) => {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const localTime = new Date(utc + (timezone * 1000));
+      setTime(localTime);
+    }, 60000); // Update every minute
+
+    // Initial update
+    const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const localTime = new Date(utc + (timezone * 1000));
+    setTime(localTime);
+
+    return () => clearInterval(timer);
+  }, [timezone]);
+
+  const formatTime = (date) => {
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    hours = hours.toString().padStart(2, '0');
+    
+    return `${hours}:${minutes} ${ampm}`;
+  };
+
+  return <span style={{fontSize: '12px', color: '#ccc'}}>{formatTime(time)}</span>;
+};
+
 const defaults = {
   color: "white",
   size: 60,
@@ -78,7 +113,8 @@ function BookmarkCities() {
           ...city,
           country: data.sys.country,
           lat: data.coord.lat,
-          lon: data.coord.lon
+          lon: data.coord.lon,
+          timezone: data.timezone
         } : city
       ));
       
@@ -96,7 +132,8 @@ function BookmarkCities() {
         country: "Unknown",
         isHome: false,
         lat: 0,
-        lon: 0
+        lon: 0,
+        timezone: 0
       };
       setCities(prev => [...prev, city]);
       getWeatherByName(cityName, city.id);
@@ -160,6 +197,9 @@ function BookmarkCities() {
             <div className="bookmark-city-info">
               <h3>{city.name}</h3>
               <p>{city.country}</p>
+              <div className="bookmark-time">
+                <BookmarkTime timezone={city.timezone || 0} />
+              </div>
             </div>
             {weather ? (
               <div className="bookmark-weather">
