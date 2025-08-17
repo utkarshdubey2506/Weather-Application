@@ -34,7 +34,7 @@ const BookmarkTime = ({ timezone }) => {
     return `${hours}:${minutes} ${ampm}`;
   };
 
-  return <span style={{fontSize: '12px', color: '#ccc'}}>{formatTime(time)}</span>;
+  return <span style={{fontSize: '22px', color: '#ccc'}}>{formatTime(time)}</span>;
 };
 
 const defaults = {
@@ -189,35 +189,43 @@ function BookmarkCities() {
               <button onClick={() => deleteCity(city.id)} className="delete-btn">×</button>
             </div>
             {city.isHome && <div className="home-badge">🏠 Home</div>}
-            {!city.isHome && (
-              <button onClick={() => toggleHome(city.id)} className="set-home-btn">
-                Set as Home
-              </button>
-            )}
-            <div className="bookmark-city-info">
-              <h3>{city.name}</h3>
-              <p>{city.country}</p>
-              <div className="bookmark-time">
-                <BookmarkTime timezone={city.timezone || 0} />
+
+            <div className="bookmark-top-section">
+              <div className="bookmark-city-info">
+                <h3>{city.name}, {city.country}</h3>
+                <div className="bookmark-time">
+                  <BookmarkTime timezone={city.timezone || 0} />
+                </div>
               </div>
+              {weather ? (
+                <div className="bookmark-weather">
+                  <div className="bookmark-weather-icon">
+                    <ReactAnimatedWeather
+                      icon={weather.icon}
+                      color={defaults.color}
+                      size={50}
+                      animate={defaults.animate}
+                    />
+                  </div>
+                  <div className="bookmark-temp">{weather.temperature}°C</div>
+                  <div className="bookmark-desc">{weather.main}</div>
+                </div>
+              ) : (
+                <div className="bookmark-loading">Loading...</div>
+              )}
             </div>
-            {weather ? (
-              <div className="bookmark-weather">
-                <ReactAnimatedWeather
-                  icon={weather.icon}
-                  color={defaults.color}
-                  size={defaults.size}
-                  animate={defaults.animate}
-                />
-                <div className="bookmark-temp">{weather.temperature}°C</div>
-                <div className="bookmark-desc">{weather.main}</div>
+            {weather && (
+              <div className="bookmark-bottom-section">
                 <div className="bookmark-details">
                   <div className="bookmark-humidity">Humidity: {weather.humidity}%</div>
                   <div className="bookmark-windspeed">Wind: {weather.windSpeed ? Math.round(weather.windSpeed) : 'N/A'} km/h</div>
                 </div>
+                {!city.isHome && (
+                  <button onClick={() => toggleHome(city.id)} className="set-home-btn">
+                    Set as Home
+                  </button>
+                )}
               </div>
-            ) : (
-              <div className="bookmark-loading">Loading...</div>
             )}
           </div>
         );

@@ -5,7 +5,7 @@ import "./App.css";
 
 function App() {
   return (
-    <>
+    <div className="app-wrapper">
       <div className="container">
         <CurrentLocation />
       </div>
@@ -13,7 +13,7 @@ function App() {
       <div className="footer-info">
         
       </div>
-    </>
+    </div>
   );
 }
 
