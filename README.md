@@ -1,4 +1,6 @@
-# Weather App - React 18
+# Weather Application
+<img width="1899" height="859" alt="image" src="https://github.com/user-attachments/assets/3ca0c499-b8cf-4f3f-91fa-6e2922a563ed" />
+
 
 A modern, responsive weather application built with React 18 that provides real-time weather information with enhanced features.
 
