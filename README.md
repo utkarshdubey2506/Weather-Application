@@ -1,5 +1,5 @@
 # Weather Application
-<img width="1755" height="850" alt="image" src="https://github.com/user-attachments/assets/94e55f03-f399-4f99-b255-47ff5b5108dd" />
+<img width="1120" height="802" alt="image" src="https://github.com/user-attachments/assets/d811bb73-7202-4721-96d3-93ea8161b10c" />
 
 
 
